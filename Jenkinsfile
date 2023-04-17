@@ -18,6 +18,7 @@ pipeline {
 				echo "$PATH"
 				echo "BUILD_NUMBER - $env.BUILD_NUMBER"
 				echo "JOB_NAME - $env.JOB_NAME"
+				echo "BUILD_TAG - $env.BUILD_TAG"
 			}
 		}
 		stage ('Compile') {
@@ -35,6 +36,27 @@ pipeline {
 				sh 'mvn failsafe:integration-test failsafe:verify'
 			}
 		}
+			stage ('Build Docker Image'){
+				//"docker build -t vaccine89/currency-exchange:$env.BUILD.TAG"
+				script {
+					dockerImage = docker.build("vaccine89/currency-exchange:$env.BUILD.TAG")
+				}
+			}
+			stage ('Push Docker Image') {
+				steps {
+					script {
+						docker.withRegistry('', 'dockerHub') {
+						dockerImage.push();
+						dockerImage.push('latest');
+					}
+				}
+			}
+
+			stage ('Package') {
+				steps {
+					sh 'mvn package -DskipTests'
+				}
+			}
 	} 
 	post {
 		always {
