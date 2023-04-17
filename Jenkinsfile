@@ -35,7 +35,7 @@ pipeline {
         stage ('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build("vaccine89/currency-exchange:$env.BUILD.TAG")
+                    dockerImage = docker.build("vaccine89/currency-exchange:$env.BUILD_TAG")
                 }
             }
         }
