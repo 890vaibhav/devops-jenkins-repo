@@ -9,7 +9,7 @@ pipeline {
 	}
 
 	stages {
-		stage ('Build'){
+		stage ('Checkout'){
 			steps {
 				// sh 'mvn --version'
 				sh 'mvn --version'
@@ -20,14 +20,19 @@ pipeline {
 				echo "JOB_NAME - $env.JOB_NAME"
 			}
 		}
+		stage ('compile') {
+			steps {
+				sh 'mvn clean complie'
+			}
+		}
 			stage ('Test'){
 			steps {
-				echo "Test"
+				sh  'mvn test'
 			}
 		}
 			stage ('Integration'){
 			steps {
-				echo "Integration"
+				sh 'mvn failsafe:integration-test failsafe:verify'
 			}
 		}
 	} 
