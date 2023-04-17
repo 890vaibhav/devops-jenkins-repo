@@ -20,7 +20,7 @@ pipeline {
 				echo "JOB_NAME - $env.JOB_NAME"
 			}
 		}
-		stage ('compile') {
+		stage ('Compile') {
 			steps {
 				sh 'mvn clean complie'
 			}
