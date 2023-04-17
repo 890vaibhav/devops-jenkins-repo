@@ -1,17 +1,13 @@
 pipeline {
 	agent any
-	// agent {docker {image 'maven:3.6.3'}}
-
 	environment {
 		dockerHome = tool 'mydocker'
 		mavenHome = tool 'mymaven'
 		PATH = "$dockerHome/bin:$mavenHome/bin:$PATH"
 	}
-
 	stages {
-		stage ('Checkout'){
+		stage ('Checkout') {
 			steps {
-				// sh 'mvn --version'
 				sh 'mvn --version'
 				sh 'docker version'
 				echo "Build"
@@ -26,44 +22,43 @@ pipeline {
 				sh 'mvn clean compile'
 			}
 		}
-			stage ('Test'){
+		stage ('Test') {
 			steps {
 				sh  'mvn test'
 			}
 		}
-			stage ('Integration'){
+		stage ('Integration') {
 			steps {
 				sh 'mvn failsafe:integration-test failsafe:verify'
 			}
 		}
-			stage ('Build Docker Image'){
-				//"docker build -t vaccine89/currency-exchange:$env.BUILD.TAG"
-				script {
-					dockerImage = docker.build("vaccine89/currency-exchange:$env.BUILD.TAG")
-				}
+		stage ('Build Docker Image') {
+			script {
+				dockerImage = docker.build("vaccine89/currency-exchange:$env.BUILD.TAG")
 			}
-			stage ('Push Docker Image') {
-				steps {
-					script {
-						docker.withRegistry('', 'dockerHub') {
-						dockerImage.push();
-						dockerImage.push('latest');
+		}
+		stage ('Push Docker Image') {
+			steps {
+				script {
+					docker.withRegistry('', 'dockerHub') {
+						dockerImage.push()
+						dockerImage.push('latest')
 					}
 				}
 			}
-
-			stage ('Package') {
-				steps {
-					sh 'mvn package -DskipTests'
-				}
+		}
+		stage ('Package') {
+			steps {
+				sh 'mvn package -DskipTests'
 			}
+		}
 	} 
 	post {
 		always {
-			echo "Im Awesom,i run always"
+			echo "Im Awesome, I run always"
 		}
 		success {
-			echo "i Run when you are successful"
+			echo "I run when you are successful"
 		}
 		failure {
 			echo "I run when you fail"
